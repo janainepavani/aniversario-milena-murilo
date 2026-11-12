@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Confirmação de presença | Aniversário Milena e Murilo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Allura&family=Playfair+Display:wght@500;600;700&family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* =========================================================
+     EDITE AQUI: os dados da festa ficam no bloco CONFIG,
+     lá embaixo, no <script>. Não precisa mexer no resto.
+     ========================================================= */
+  :root{
+    --bg:#fbf6f4;
+    --ink:#2b2d3a;
+    --muted:#6c6878;
+    --a:#e98a8a;      /* rosa coral */
+    --b:#6f86c4;      /* azul */
+    --c:#f2cf6b;      /* amarelo */
+    --d:#a78bd4;      /* lilás */
+    --card:#ffffff;
+    --line:#efe6da;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:"Nunito",system-ui,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(60% 40% at 0% 0%, #dfe7f7 0%, transparent 70%),
+      radial-gradient(55% 40% at 100% 8%, #f9dcd6 0%, transparent 70%),
+      radial-gradient(60% 40% at 100% 100%, #e7def6 0%, transparent 70%),
+      var(--bg);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  .confetti{position:fixed;inset:0;pointer-events:none;z-index:0}
+  .confetti span{position:absolute;display:block;border-radius:3px;opacity:.75}
+  main{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:28px 18px 60px}
+
+  header{text-align:center;padding:26px 8px 8px}
+  .kicker{
+    display:block;font-family:"Playfair Display",serif;font-weight:500;
+    font-size:1.3rem;color:var(--ink);margin:40px auto 4px;max-width:14ch;line-height:1.2
+  }
+  .paw{position:absolute;width:74px;height:74px;fill:#1f1f26;opacity:.9;pointer-events:none}
+  .paw.p1{top:14px;left:6px;transform:rotate(-18deg)}
+  .paw.p2{width:58px;height:58px;bottom:-6px;right:10px;transform:rotate(14deg)}
+  header{position:relative}
+  h1{
+    font-family:"Allura",cursive;font-weight:400;color:#56607e;
+    font-size:clamp(3.6rem,17vw,5.2rem);line-height:.95;margin:6px 0 0;
+  }
+  h1 span{display:block}
+  h1 .amp{display:inline;font-size:.8em;margin-right:.1em}
+  .ages{display:flex;justify-content:center;gap:48px;margin-top:10px;
+    font-family:"Playfair Display",serif;font-size:1.25rem;color:var(--ink)}
+  .ages b{font-weight:600}
+  .sub{font-family:"Playfair Display",serif;font-style:italic;font-size:1.05rem;color:var(--muted);margin:14px auto 0;max-width:30ch}
+
+  .details{
+    margin:26px 0 20px;background:var(--card);border:2px solid var(--line);
+    border-radius:22px;padding:6px 20px;
+  }
+  .row{display:flex;gap:14px;padding:14px 0;border-bottom:1px dashed var(--line);align-items:baseline}
+  .row:last-child{border-bottom:0}
+  .row .label{
+    flex:0 0 74px;font-family:"Fredoka",sans-serif;font-weight:600;font-size:.86rem;
+    text-transform:uppercase;letter-spacing:.06em;color:var(--d)
+  }
+  .row .value{font-weight:700;font-size:1.04rem}
+  .row .value small{display:block;font-weight:400;color:var(--muted);font-size:.92rem;margin-top:2px}
+  .row a{color:var(--b);font-weight:700}
+
+  .card{
+    background:var(--card);border-radius:24px;padding:24px 20px;
+    box-shadow:0 10px 30px -14px rgba(60,40,20,.25);border:2px solid var(--line);
+  }
+  .card h2{font-family:"Fredoka",sans-serif;font-size:1.5rem;margin:0 0 4px}
+  .card .hint{color:var(--muted);margin:0 0 18px;font-size:.98rem}
+  .deadline{font-weight:700;color:var(--a)}
+
+  label.f{display:block;font-weight:700;margin:16px 0 6px}
+  input[type=text],input[type=number],textarea{
+    width:100%;font:inherit;font-size:1.05rem;padding:13px 14px;border-radius:14px;
+    border:2px solid var(--line);background:#fffdf9;color:var(--ink);outline:none;
+  }
+  input:focus,textarea:focus{border-color:var(--b)}
+  textarea{min-height:84px;resize:vertical}
+
+  .choice{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .choice input{position:absolute;opacity:0;pointer-events:none}
+  .choice label{
+    display:block;text-align:center;padding:14px 8px;border-radius:14px;cursor:pointer;
+    border:2px solid var(--line);font-weight:700;background:#fffdf9;transition:.15s;
+  }
+  .choice input:checked + label.yes{background:var(--b);border-color:var(--b);color:#fff}
+  .choice input:checked + label.no{background:var(--muted);border-color:var(--muted);color:#fff}
+  .choice input:focus-visible + label{outline:3px solid var(--c);outline-offset:2px}
+
+  .counts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .stepper{display:flex;align-items:center;border:2px solid var(--line);border-radius:14px;background:#fffdf9;overflow:hidden}
+  .stepper button{
+    flex:0 0 46px;height:48px;border:0;background:transparent;font:inherit;font-size:1.4rem;
+    font-weight:700;color:var(--d);cursor:pointer
+  }
+  .stepper button:active{background:var(--line)}
+  .stepper input{border:0!important;background:transparent!important;text-align:center;padding:0!important;font-weight:700;width:100%;-moz-appearance:textfield}
+  .stepper input::-webkit-outer-spin-button,.stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+
+  .hidden{display:none}
+  .pcard{border:2px solid var(--line);border-radius:16px;padding:12px 14px 14px;margin-top:14px;background:#fffdf9}
+  .phead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .ptitle{font-family:"Fredoka",sans-serif;font-weight:600;color:var(--d);font-size:1.05rem}
+  .rm{background:none;border:0;color:var(--muted);font:inherit;font-size:.9rem;text-decoration:underline;cursor:pointer;padding:4px}
+  .tipo{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+  .tipo button{padding:11px;border-radius:12px;border:2px solid var(--line);background:#fff;font:inherit;font-weight:700;color:var(--ink);cursor:pointer}
+  .tipo button.on{background:var(--b);border-color:var(--b);color:#fff}
+  .pcard input{margin-top:8px}
+  .add{display:block;width:100%;margin-top:14px;padding:14px;border-radius:14px;border:2px dashed var(--d);
+    background:transparent;color:var(--d);font:inherit;font-weight:700;font-size:1.02rem;cursor:pointer}
+  .group-title{font-family:"Fredoka",sans-serif;font-weight:600;color:var(--d);
+    text-transform:uppercase;letter-spacing:.06em;font-size:.86rem;margin:22px 0 2px}
+  .person{display:grid;grid-template-columns:1fr 96px;gap:8px;margin-top:8px}
+  .person.adult{grid-template-columns:1fr}
+  .person input{padding:12px 12px}
+  .err{color:#c0392b;font-weight:700;font-size:.95rem;margin-top:12px;min-height:1.2em}
+
+  .btn{
+    display:block;width:100%;margin-top:22px;padding:17px;border:0;border-radius:16px;
+    font-family:"Fredoka",sans-serif;font-weight:600;font-size:1.2rem;text-align:center;
+    text-decoration:none;cursor:pointer;color:#fff;background:var(--a);
+    box-shadow:0 6px 0 #c96a6a;transition:transform .08s, box-shadow .08s;
+  }
+  .btn:active{transform:translateY(4px);box-shadow:0 2px 0 #c96a6a}
+
+  .done{text-align:center}
+  .done h2{color:var(--b)}
+  .done p{color:var(--muted)}
+  .link-back{background:none;border:0;color:var(--d);font:inherit;font-weight:700;text-decoration:underline;cursor:pointer;margin-top:10px}
+
+  footer{text-align:center;color:var(--muted);font-size:.9rem;margin-top:28px}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <g id="paw">
+    <ellipse cx="50" cy="66" rx="24" ry="20"/>
+    <ellipse cx="22" cy="42" rx="10" ry="13" transform="rotate(-20 22 42)"/>
+    <ellipse cx="40" cy="24" rx="10" ry="14" transform="rotate(-6 40 24)"/>
+    <ellipse cx="62" cy="24" rx="10" ry="14" transform="rotate(8 62 24)"/>
+    <ellipse cx="79" cy="43" rx="10" ry="13" transform="rotate(22 79 43)"/>
+  </g></defs></svg>
+<div class="confetti" id="confetti" aria-hidden="true"></div>
+
+<main>
+  <header>
+    <svg class="paw p1" viewBox="0 0 100 100" aria-hidden="true"><use href="#paw"/></svg>
+    <span class="kicker" id="kicker">Venha comemorar nosso aniversário!</span>
+    <h1><span id="name1"></span><span><span class="amp">&amp;</span><span id="name2"></span></span></h1>
+    <div class="ages"><span><b id="idade1"></b></span><span><b id="idade2"></b></span></div>
+    <p class="sub" id="sub"></p>
+  </header>
+
+  <section class="details" id="details"></section>
+
+  <section class="card" id="formCard">
+    <h2>Confirme sua presença</h2>
+    <p class="hint"><span id="deadlineWrap">Responda até <span class="deadline" id="deadline"></span>. </span>Ao enviar, abre o WhatsApp com a mensagem pronta, é só tocar em enviar.</p>
+
+    <form id="rsvp" novalidate>
+      <label class="f" for="nome">Nome de quem está respondendo</label>
+      <input type="text" id="nome" autocomplete="name" placeholder="Ex.: Ana Souza">
+
+      <label class="f">Vocês vêm?</label>
+      <div class="choice">
+        <input type="radio" name="vem" id="sim" value="sim">
+        <label class="yes" for="sim">Sim, vamos!</label>
+        <input type="radio" name="vem" id="nao" value="nao">
+        <label class="no" for="nao">Não vamos poder</label>
+      </div>
+
+      <div id="quantos" class="hidden">
+        <div id="pessoas"></div>
+        <button type="button" class="add" id="addPessoa">Adicionar mais uma pessoa</button>
+      </div>
+
+      <label class="f" for="recado">Recado para a Milena e o Murilo <span style="font-weight:400;color:var(--muted)">(opcional)</span></label>
+      <textarea id="recado" placeholder="Restrição alimentar, um recadinho, o que quiser"></textarea>
+
+      <div class="err" id="err" role="alert"></div>
+      <a class="btn" id="enviar" href="#" target="_blank" rel="noopener">Enviar confirmação</a>
+    </form>
+  </section>
+
+  <section class="card done hidden" id="doneCard">
+    <h2>Obrigada!</h2>
+    <p>Se o WhatsApp não abriu, envie a confirmação para <strong id="foneTxt"></strong>.</p>
+    <button class="link-back" id="voltar" type="button">Corrigir minha resposta</button>
+  </section>
+
+  <footer id="footer"></footer>
+  <div style="position:relative;height:60px"><svg class="paw p2" viewBox="0 0 100 100" aria-hidden="true"><use href="#paw"/></svg></div>
+</main>
+
+<script>
+/* =========================================================
+   CONFIG: troque os textos entre aspas pelos dados da festa
+   ========================================================= */
+const CONFIG = {
+  nome1: "Milena",
+  idade1: "10 anos",
+  nome2: "Murilo",
+  idade2: "6 anos",
+  subtitulo: "Sua presença vai tornar este dia mais especial!",
+  data: "Sábado, 5 de dezembro",
+  horario: "a partir das 15h",
+  local: "R. Natal Cecone, 226",
+  endereco: "Mossunguê, Curitiba",
+  mapsLink: "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent("Rua Natal Cecone, 226, Mossunguê, Curitiba, PR"),
+  traje: "",                               // ex.: "Venha confortável!" (opcional)
+  responderAte: "",                        // ex.: "28/11" (opcional; vazio esconde)
+  whatsapp: "5541998771712",               // 55 + DDD + número, só dígitos
+  planilhaUrl: "https://script.google.com/macros/s/AKfycbx0WthXdS0T3CNAb4IaEtVa2FiGMD7aFYvfk_fWxapbExj6ga5WuYFoYJ6h541rV62x/exec",                         // cole aqui o link do App da Web do Google (termina em /exec)
+  assinatura: "Com carinho, Milena, Murilo e família"
+};
+/* ========================================================= */
+
+const $ = id => document.getElementById(id);
+
+function fill(){
+  $("name1").textContent = CONFIG.nome1;
+  $("name2").textContent = CONFIG.nome2;
+  $("sub").textContent = CONFIG.subtitulo;
+  $("idade1").textContent = CONFIG.idade1;
+  $("idade2").textContent = CONFIG.idade2;
+  $("deadline").textContent = CONFIG.responderAte;
+  if (!CONFIG.responderAte) $("deadlineWrap").style.display = "none";
+  $("footer").textContent = CONFIG.assinatura;
+  const fone = CONFIG.whatsapp.replace(/\D/g,"");
+  $("foneTxt").textContent = fone.length >= 12
+    ? `(${fone.slice(2,4)}) ${fone.slice(4,-4)}-${fone.slice(-4)}` : fone;
+
+  const rows = [
+    ["Quando", CONFIG.data, CONFIG.horario],
+    ["Onde", CONFIG.local, CONFIG.endereco, CONFIG.mapsLink],
+  ];
+  if (CONFIG.traje) rows.push(["Dica", CONFIG.traje]);
+  const d = $("details");
+  rows.forEach(([lab, val, small, link]) => {
+    const r = document.createElement("div"); r.className = "row";
+    const l = document.createElement("div"); l.className = "label"; l.textContent = lab;
+    const v = document.createElement("div"); v.className = "value"; v.textContent = val;
+    if (small){ const s = document.createElement("small"); s.textContent = small; v.appendChild(s); }
+    if (link){
+      const s = document.createElement("small"); const a = document.createElement("a");
+      a.href = link; a.target = "_blank"; a.rel = "noopener"; a.textContent = "Abrir no mapa";
+      s.appendChild(a); v.appendChild(s);
+    }
+    r.append(l, v); d.appendChild(r);
+  });
+}
+
+function confetti(){
+  const colors = ["--a","--b","--c","--d"].map(v => getComputedStyle(document.documentElement).getPropertyValue(v));
+  const box = $("confetti");
+  for (let i = 0; i < 26; i++){
+    const s = document.createElement("span");
+    const size = 6 + Math.random()*10;
+    s.style.width = size + "px";
+    s.style.height = (Math.random() > .5 ? size : size*0.4) + "px";
+    s.style.left = Math.random()*100 + "%";
+    s.style.top = (Math.random() < .5 ? Math.random()*22 : 78 + Math.random()*20) + "%";
+    s.style.background = colors[i % 4];
+    s.style.transform = `rotate(${Math.random()*360}deg)`;
+    if (i % 3 === 0) s.style.borderRadius = "50%";
+    box.appendChild(s);
+  }
+}
+
+let pessoas = [{nome:"", tipo:"adulto", idade:""}];
+
+function renderPeople(){
+  const box = $("pessoas"); box.innerHTML = "";
+  pessoas.forEach((p, i) => {
+    const card = document.createElement("div"); card.className = "pcard";
+    const head = document.createElement("div"); head.className = "phead";
+    const t = document.createElement("span"); t.className = "ptitle"; t.textContent = `Pessoa ${i+1}`;
+    head.appendChild(t);
+    if (pessoas.length > 1){
+      const rm = document.createElement("button"); rm.type = "button"; rm.className = "rm"; rm.textContent = "Remover";
+      rm.onclick = () => { pessoas.splice(i,1); renderPeople(); updateLink(); };
+      head.appendChild(rm);
+    }
+    const nome = document.createElement("input"); nome.type = "text"; nome.placeholder = "Nome";
+    nome.setAttribute("aria-label", `Nome da pessoa ${i+1}`);
+    nome.value = p.nome || (i === 0 ? $("nome").value.trim() : "");
+    p.nome = nome.value;
+    nome.oninput = () => { p.nome = nome.value; updateLink(); };
+
+    const tipo = document.createElement("div"); tipo.className = "tipo";
+    ["adulto","crianca"].forEach(v => {
+      const bt = document.createElement("button"); bt.type = "button";
+      bt.textContent = v === "adulto" ? "Adulto" : "Criança";
+      if (p.tipo === v) bt.className = "on";
+      bt.onclick = () => { p.tipo = v; renderPeople(); updateLink(); };
+      tipo.appendChild(bt);
+    });
+    card.append(head, nome, tipo);
+
+    if (p.tipo === "crianca"){
+      const id = document.createElement("input"); id.type = "number"; id.min = "0"; id.max = "17";
+      id.inputMode = "numeric"; id.placeholder = "Idade da criança"; id.value = p.idade;
+      id.setAttribute("aria-label", `Idade da pessoa ${i+1}`);
+      id.oninput = () => { p.idade = id.value; updateLink(); };
+      card.appendChild(id);
+    }
+    box.appendChild(card);
+  });
+}
+
+function getVem(){ const r = document.querySelector('input[name="vem"]:checked'); return r ? r.value : null; }
+
+function buildMessage(){
+  const nome = $("nome").value.trim();
+  const vem = getVem();
+  const recado = $("recado").value.trim();
+  let msg = `*Confirmação: aniversário ${CONFIG.nome1} e ${CONFIG.nome2}*\n\n`;
+  msg += `Nome: ${nome}\n`;
+  if (vem === "sim"){
+    const ad = pessoas.filter(p => p.tipo === "adulto");
+    const cr = pessoas.filter(p => p.tipo === "crianca");
+    msg += `Presença: SIM (${pessoas.length} ${pessoas.length === 1 ? "pessoa" : "pessoas"})\n`;
+    if (ad.length){ msg += `\n*Adultos (${ad.length})*\n`; ad.forEach(p => msg += `- ${p.nome.trim()}\n`); }
+    if (cr.length){ msg += `\n*Crianças (${cr.length})*\n`; cr.forEach(p => msg += `- ${p.nome.trim()}, ${p.idade} ${p.idade === "1" ? "ano" : "anos"}\n`); }
+  } else {
+    msg += `Presença: NÃO vamos poder ir\n`;
+  }
+  if (recado) msg += `\nRecado: ${recado}\n`;
+  return msg;
+}
+
+function validate(){
+  if (!$("nome").value.trim()) return "Escreva seu nome, por favor.";
+  const vem = getVem();
+  if (!vem) return "Conte pra gente se vocês vêm.";
+  if (vem === "sim"){
+    for (let i = 0; i < pessoas.length; i++){
+      if (!pessoas[i].nome.trim()) return `Escreva o nome da pessoa ${i+1}.`;
+      if (pessoas[i].tipo === "crianca" && String(pessoas[i].idade).trim() === "")
+        return `Coloque a idade da pessoa ${i+1}.`;
+    }
+  }
+  return "";
+}
+
+function saveToSheet(){
+  if (!CONFIG.planilhaUrl) return;
+  const vem = getVem();
+  const data = {
+    responsavel: $("nome").value.trim(),
+    presenca: vem === "sim" ? "Sim" : "Não",
+    pessoas: vem === "sim" ? pessoas.map(p => ({nome: p.nome.trim(), tipo: p.tipo === "crianca" ? "Criança" : "Adulto", idade: p.tipo === "crianca" ? p.idade : ""})) : [],
+    recado: $("recado").value.trim()
+  };
+  const body = JSON.stringify(data);
+  try {
+    if (navigator.sendBeacon && navigator.sendBeacon(CONFIG.planilhaUrl, new Blob([body], {type: "text/plain"}))) return;
+  } catch(e){}
+  try { fetch(CONFIG.planilhaUrl, {method: "POST", mode: "no-cors", keepalive: true, headers: {"Content-Type": "text/plain"}, body}); } catch(e){}
+}
+
+function updateLink(){
+  const fone = CONFIG.whatsapp.replace(/\D/g,"");
+  $("enviar").href = `https://wa.me/${fone}?text=${encodeURIComponent(buildMessage())}`;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  fill(); confetti(); renderPeople(); updateLink();
+  $("addPessoa").addEventListener("click", () => {
+    pessoas.push({nome:"", tipo:"adulto", idade:""}); renderPeople(); updateLink();
+    const all = document.querySelectorAll("#pessoas .pcard input[type=text]"); all[all.length-1].focus();
+  });
+
+  $("rsvp").addEventListener("input", () => { $("err").textContent = ""; updateLink(); });
+  $("nome").addEventListener("blur", () => {
+    if (!pessoas[0].nome.trim()){ pessoas[0].nome = $("nome").value.trim(); renderPeople(); }
+    updateLink();
+  });
+  $("rsvp").addEventListener("change", () => {
+    $("quantos").classList.toggle("hidden", getVem() !== "sim");
+    $("err").textContent = "";
+    updateLink();
+  });
+  $("rsvp").addEventListener("submit", e => e.preventDefault());
+
+  $("enviar").addEventListener("click", e => {
+    const problem = validate();
+    if (problem){ e.preventDefault(); $("err").textContent = problem; return; }
+    updateLink();
+    saveToSheet();
+    setTimeout(() => {
+      $("formCard").classList.add("hidden");
+      $("doneCard").classList.remove("hidden");
+      window.scrollTo({top:0, behavior:"smooth"});
+    }, 400);
+  });
+
+  $("voltar").addEventListener("click", () => {
+    $("doneCard").classList.add("hidden");
+    $("formCard").classList.remove("hidden");
+  });
+});
+</script>
+</body>
+</html>
